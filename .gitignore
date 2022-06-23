@@ -12,6 +12,8 @@
 
 # production
 /build
+prod.js
+dev.js
 
 # misc
 .DS_Store
