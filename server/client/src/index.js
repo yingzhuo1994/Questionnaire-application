@@ -5,8 +5,9 @@ import { applyMiddleware } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 
 import App from "./components/App";
+import reducers from './reducers';
 
-const store = configureStore({reducer: {}}, {}, applyMiddleware());
+const store = configureStore({reducer: reducers}, {}, applyMiddleware());
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
