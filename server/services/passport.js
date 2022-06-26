@@ -6,12 +6,12 @@ const keys = require("../config/keys");
 const User = mongoose.model("users");
 
 passport.serializeUser((user, done) => {
-  console.log('serialize: ', user);
+  console.log("serialize: ", user);
   done(null, user.id);
 });
 
 passport.deserializeUser((id, done) => {
-  console.log('id: ', id);
+  console.log("id: ", id);
   User.findById(id).then((user) => {
     done(null, user);
   });
@@ -25,18 +25,17 @@ passport.use(
       callbackURL: "/auth/google/callback",
       proxy: true,
     },
-    (accessToken, refreshToken, profile, done) => {
-      User.findOne({ googleId: profile.id }).then((existingUser) => {
-        if (existingUser) {
-          console.log("The user has existed.");
-          done(null, existingUser);
-        } else {
-          console.log("Create a new user!");
-          new User({ googleId: profile.id })
-            .save()
-            .then((user) => done(null, user));
-        }
-      });
+    async (accessToken, refreshToken, profile, done) => {
+      const existingUser = await User.findOne({ googleId: profile.id });
+
+      if (existingUser) {
+        console.log("The user has existed.");
+        return done(null, existingUser);
+      }
+      
+      console.log("Create a new user!");
+      const user = await new User({ googleId: profile.id }).save();
+      done(null, user);
     }
   )
 );
