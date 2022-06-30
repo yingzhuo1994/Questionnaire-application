@@ -5,7 +5,7 @@ import * as actions from '../actions';
 
 class Payments extends Component {
   render() {
-    debugger;
+    // debugger;
 
     return (
       <StripeCheckout
@@ -21,4 +21,4 @@ class Payments extends Component {
   }
 }
 
-export default connect()(Payments);
+export default connect(null, actions)(Payments);
