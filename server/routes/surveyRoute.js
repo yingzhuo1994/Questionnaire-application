@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { Path } = require("path-parser");
 const { URL } = require("url");
 const mongoose = require("mongoose");
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require("mongodb");
 const requireLogin = require("../middlewares/requireLogin");
 const requireCredits = require("../middlewares/requireCredits");
 const Mailer = require("../services/Mailer");
@@ -11,7 +11,7 @@ const surveyTemplate = require("../services/emailTemplates/surveyTemplate");
 const Survey = mongoose.model("surveys");
 
 module.exports = (app) => {
-  app.get("/api/surveys/thanks", (req, res) => {
+  app.get("/api/surveys/:surveyId/:choice", (req, res) => {
     res.send("Thanks for voting!");
   });
 
@@ -35,12 +35,12 @@ module.exports = (app) => {
           {
             _id: new ObjectId(surveyId),
             recipients: {
-              $elemMatch: { email: email, responded: {$ne: true} },
+              $elemMatch: { email: email, responded: { $ne: true } },
             },
           },
           {
             $inc: { [choice]: 1 },
-            $set: { 'recipients.$.responded': true },
+            $set: { "recipients.$.responded": true, lastResponded: new Date() },
           }
         ).exec();
       })
