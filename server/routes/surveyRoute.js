@@ -2,6 +2,7 @@ const _ = require("lodash");
 const { Path } = require("path-parser");
 const { URL } = require("url");
 const mongoose = require("mongoose");
+const { ObjectId } = require('mongodb');
 const requireLogin = require("../middlewares/requireLogin");
 const requireCredits = require("../middlewares/requireCredits");
 const Mailer = require("../services/Mailer");
@@ -29,9 +30,23 @@ module.exports = (app) => {
       })
       .compact()
       .uniqBy("email", "surveyId")
+      .each(({ surveyId, email, choice }) => {
+        Survey.updateOne(
+          {
+            _id: new ObjectId(surveyId),
+            recipients: {
+              $elemMatch: { email: email, responded: {$ne: true} },
+            },
+          },
+          {
+            $inc: { [choice]: 1 },
+            $set: { 'recipients.$.responded': true },
+          }
+        ).exec();
+      })
       .value();
 
-    console.log(events);
+    // console.log(events);
 
     res.send({});
   });
